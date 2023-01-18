@@ -7,7 +7,7 @@ import {
   useReducer,
 } from "react";
 
-interface Pokemon {
+export interface Pokemon {
   id: number;
   name: string;
   type: string[];
