@@ -6,6 +6,7 @@ import {
   useMemo,
   useReducer,
 } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export interface Pokemon {
   id: number;
@@ -20,18 +21,10 @@ export interface Pokemon {
 }
 
 type PokemonState = {
-  pokemon: Pokemon[];
-  loading: boolean;
   search: string;
 };
 
-type PokemonAction =
-  | {
-      type: "SET_POKEMON";
-      payload: Pokemon[];
-    }
-  | { type: "SET_LOADING" }
-  | { type: "SET_SEARCH"; payload: string };
+type PokemonAction = { type: "SET_SEARCH"; payload: string };
 
 type PokemonReducerType = (
   state: PokemonState,
@@ -48,38 +41,45 @@ export const usePokemon = () => {
 
 const usePokemonSource = () => {
   // State Reducer
-  const [{ loading, pokemon, search }, dispatch] =
-    useReducer<PokemonReducerType>(
-      (state, action) => {
-        switch (action.type) {
-          case "SET_POKEMON":
-            return { ...state, pokemon: action.payload, loading: false };
-          case "SET_LOADING":
-            return { ...state, pokemon: [], loading: true };
-          case "SET_SEARCH":
-            return {
-              ...state,
-              search: action.payload,
-            };
-          default:
-            return state;
-        }
-      },
-      { pokemon: [], loading: false, search: "" }
-    );
+  const [{ search }, dispatch] = useReducer<PokemonReducerType>(
+    (state, action) => {
+      switch (action.type) {
+        case "SET_SEARCH":
+          return {
+            ...state,
+            search: action.payload,
+          };
+        default:
+          return state;
+      }
+    },
+    { search: "" }
+  );
+
+  // Data fetch refactored to useQuery from react-query
+  const { data: pokemon, isLoading: loading } = useQuery<Pokemon[]>(
+    ["pokemon"],
+    () =>
+      fetch("/pokemon.json").then(async (res) => {
+        return res.json();
+      }),
+    {
+      initialData: [],
+    }
+  );
 
   // Initial Data Fetch
-  useEffect(() => {
-    fetch("/pokemon.json")
-      .then(async (res) => {
-        dispatch({
-          type: "SET_LOADING",
-        });
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        return res.json();
-      })
-      .then((data) => dispatch({ payload: [...data], type: "SET_POKEMON" }));
-  }, []);
+  // useEffect(() => {
+  //   fetch("/pokemon.json")
+  //     .then(async (res) => {
+  //       dispatch({
+  //         type: "SET_LOADING",
+  //       });
+  //       await new Promise((resolve) => setTimeout(resolve, 2000));
+  //       return res.json();
+  //     })
+  //     .then((data) => dispatch({ payload: [...data], type: "SET_POKEMON" }));
+  // }, []);
 
   // setSearch callback that is created only once because it does not change or have and dependencies
   // The setSearch only dispatches the action.
