@@ -1,5 +1,5 @@
 import { Pokemon, PokemonProvider, usePokemon } from "./pokemonStore";
-import { Input, Flex, Image, Text, Grid } from "@chakra-ui/react";
+import { Input, Flex, Image, Text, Grid, Spinner } from "@chakra-ui/react";
 
 const SearchBox = ({ onChange }: { onChange: (p: string) => void }) => {
   return (
@@ -51,7 +51,7 @@ const PokemonList = () => {
         {!loading ? (
           pokemon.map((p) => <SinglePokemon pokemon={p} key={p.id} />)
         ) : (
-          <div>loading...</div>
+          <Spinner />
         )}
       </Grid>
     </Flex>
