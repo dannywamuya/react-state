@@ -11,10 +11,10 @@ const SearchBox = ({ onChange }: { onChange: (p: string) => void }) => {
   );
 };
 
-const SinglePokemon = ({ pokemon }: { pokemon: Pokemon }) => {
+const SinglePokemon = ({ pokemon: { id, name } }: { pokemon: Pokemon }) => {
   return (
     <Flex
-      key={pokemon.id}
+      key={id}
       align={"center"}
       direction={"column"}
       boxShadow={"lg"}
@@ -27,9 +27,9 @@ const SinglePokemon = ({ pokemon }: { pokemon: Pokemon }) => {
         borderRadius={"full"}
         boxSize={"150px"}
         alt=""
-        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
+        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
       />
-      <Text p={"1"}>{pokemon.name}</Text>
+      <Text p={"1"}>{name}</Text>
     </Flex>
   );
 };
